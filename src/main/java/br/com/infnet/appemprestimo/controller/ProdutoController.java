@@ -1,40 +1,31 @@
 package br.com.infnet.appemprestimo.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import br.com.infnet.appemprestimo.model.negocio.Produto;
 import br.com.infnet.appemprestimo.model.service.ProdutoService;
+import io.swagger.annotations.ApiOperation;
 
-@Controller
+@RestController
+@RequestMapping("/api/emprestimo")
 public class ProdutoController {
 
 	@Autowired private ProdutoService produtoService;
 	
+	@ApiOperation(value = "Retornar uma lista de produtos")
 	@GetMapping(value = "/produtos")
-	public String lista(
-				Model model
-			) {
-		model.addAttribute("produtos", produtoService.obterLista());
-		
-		return "produto/lista";
+	public List<Produto> obterLista() {
+		return produtoService.obterLista();
 	}
-
+	@ApiOperation(value = "Remover um produto existente")
 	@GetMapping(value = "/produto/{id}/excluir")
-	public String excluir(
-				Model model,
-				@PathVariable Integer id
-			) {
-		
-		try {
-			produtoService.excluir(id);
-		} catch (Exception e) {
-			model.addAttribute("msgError", "Impossível realizar a exclusão: este item está sendo utilizado!!");
-			return this.lista(model);
-		}
-		
-		return "redirect:/produtos";
+	public void excluir(@PathVariable Integer id) {
+		produtoService.excluir(id);
 	}
 }

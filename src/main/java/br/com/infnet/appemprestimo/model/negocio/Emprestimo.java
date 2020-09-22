@@ -13,6 +13,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 @Table(name = "TEmprestimo")
 public class Emprestimo {
@@ -25,6 +27,7 @@ public class Emprestimo {
 	@JoinTable(name = "TEmprestimoProduto",	
 		joinColumns = {@JoinColumn(name="idEmprestimo")},
 		inverseJoinColumns = {@JoinColumn(name="idProduto")})
+	@JsonManagedReference
 	private List<Produto> produtos;
 	@OneToOne(cascade = CascadeType.DETACH)
 	@JoinColumn(name = "idSolicitante")

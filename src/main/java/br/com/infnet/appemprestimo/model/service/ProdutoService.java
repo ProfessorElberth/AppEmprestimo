@@ -14,8 +14,7 @@ public class ProdutoService {
 
 	@Autowired private IProdutoRepository produtoRepository;
 	
-	public List<Produto> obterLista(){
-		
+	public List<Produto> obterLista(){		
 		return (List<Produto>)produtoRepository.findAll(Sort.by(Sort.Direction.ASC, "descricao"));
 	}
 	

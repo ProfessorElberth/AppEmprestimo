@@ -11,9 +11,23 @@ import javax.persistence.InheritanceType;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 @Entity
 @Table(name = "TProduto")
 @Inheritance(strategy = InheritanceType.JOINED)
+@JsonTypeInfo(
+		use = JsonTypeInfo.Id.NAME,
+		include = JsonTypeInfo.As.PROPERTY,
+		property = "tipo"
+		)
+@JsonSubTypes({
+	@JsonSubTypes.Type(value = Game.class, name = "Game"),
+	@JsonSubTypes.Type(value = Livro.class, name = "Livro"),
+	@JsonSubTypes.Type(value = Revista.class, name = "Revista")
+})
 public class Produto {
 
 	@Id
@@ -21,6 +35,7 @@ public class Produto {
 	private Integer id;
 	private String descricao;
 	@ManyToMany(mappedBy = "produtos")
+	@JsonBackReference
 	private List<Emprestimo> emprestimos;
 	
 	@Override

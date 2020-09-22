@@ -1,73 +1,46 @@
 package br.com.infnet.appemprestimo.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import br.com.infnet.appemprestimo.model.negocio.Solicitante;
 import br.com.infnet.appemprestimo.model.service.SolicitanteService;
+import io.swagger.annotations.ApiOperation;
 
-@Controller
+@RestController
+@RequestMapping("/api/emprestimo")
 public class SolicitanteController {
 
 	@Autowired private SolicitanteService solicitanteService;
 	
-	@GetMapping(value = "/solicitante")
-	public String novo(
-				Model model
-			) {
-		model.addAttribute("operacao", "inclusão");
-		
-		return "solicitante/detalhe";
-	}
-	
+	@ApiOperation(value = "Retornar uma lista de solicitantes")
 	@GetMapping(value = "/solicitantes")
-	public String lista(
-				Model model
-			) {
-		model.addAttribute("solicitantes", solicitanteService.obterLista()); 
-		
-		return "solicitante/lista";
+	public List<Solicitante> obterLista() {
+		return solicitanteService.obterLista(); 
 	}
 	
+	@ApiOperation(value = "Retornar uma solicitante")
+	@GetMapping(value = "/solicitante/{id}")
+	public Solicitante obterPorId(@PathVariable Integer id) {
+		return solicitanteService.obterPorId(id);
+	}
+
+	@ApiOperation(value = "Cadastrar um novo solicitante")
 	@PostMapping(value = "/solicitante/incluir")
-	public String incluir(
-				Solicitante solicitante
-			) {
-		
+	public void incluir(@RequestBody Solicitante solicitante) {
 		solicitanteService.incluir(solicitante);
-		
-		return "redirect:/solicitantes";
 	}
 	
+	@ApiOperation(value = "Remover um solicitante existente")
 	@GetMapping(value = "/solicitante/{id}/excluir")
-	public String excluir(
-				Model model,
-				@PathVariable Integer id
-			) {
-		
-		try {
-			solicitanteService.excluir(id);
-		} catch (Exception e) {
-			model.addAttribute("msgError", "Impossível realizar a exclusão: este item está sendo utilizado!!");
-			return this.lista(model);
-		}
-		
-		return "redirect:/solicitantes";
-	}
-	
-	@GetMapping(value = "/solicitante/{id}/alterar")
-	public String alterar(
-				Model model,
-				@PathVariable Integer id
-			) {
-		model.addAttribute("operacao", "alteração");
-		
-		model.addAttribute("solicitante", solicitanteService.obterPorId(id));
-		
-		return "solicitante/detalhe";
+	public void excluir(@PathVariable Integer id) {
+		solicitanteService.excluir(id);
 	}
 }

@@ -1,73 +1,46 @@
 package br.com.infnet.appemprestimo.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import br.com.infnet.appemprestimo.model.negocio.Revista;
 import br.com.infnet.appemprestimo.model.service.RevistaService;
+import io.swagger.annotations.ApiOperation;
 
-@Controller
+@RestController
+@RequestMapping("/api/emprestimo")
 public class RevistaController {
 
 	@Autowired private RevistaService revistaService;
 	
-	@GetMapping(value = "/revista")
-	public String novo(
-				Model model
-			) {
-		model.addAttribute("operacao", "inclusão");
-		
-		return "revista/detalhe";
-	}
-	
+	@ApiOperation(value = "Retornar uma lista de revistas")
 	@GetMapping(value = "/revistas")
-	public String lista(
-				Model model
-			) {
-		model.addAttribute("revistas", revistaService.obterLista());
-		
-		return "revista/lista";
-	}
-	
-	@PostMapping(value = "/revista/incluir")
-	public String incluir(
-				Revista revista
-			) {
-		
-		revistaService.incluir(revista);
-		
-		return "redirect:/revistas";
+	public List<Revista> obterLista() {
+		return revistaService.obterLista();
 	}
 
-	@GetMapping(value = "/revista/{id}/excluir")
-	public String excluir(
-				Model model,
-				@PathVariable Integer id
-			) {
-		
-		try {
-			revistaService.excluir(id);
-		} catch (Exception e) {
-			model.addAttribute("msgError", "Impossível realizar a exclusão: este item está sendo utilizado!!");
-			return this.lista(model);
-		}
-		
-		return "redirect:/revistas";
+	@ApiOperation(value = "Retornar uma revista")
+	@GetMapping(value = "/revista/{id}")
+	public Revista obterPorId(@PathVariable Integer id) {
+		return revistaService.obterPorId(id);
 	}
-	
-	@GetMapping(value = "/revista/{id}/alterar")
-	public String alterar(
-				Model model,
-				@PathVariable Integer id
-			) {
-		model.addAttribute("operacao", "alteração");
-		
-		model.addAttribute("revista", revistaService.obterPorId(id));
-		
-		return "revista/detalhe";
+
+	@ApiOperation(value = "Cadastrar uma nova revista")
+	@PostMapping(value = "/revista/incluir")
+	public void incluir(@RequestBody Revista revista) {
+		revistaService.incluir(revista);
+	}
+
+	@ApiOperation(value = "Remover uma revista existente")
+	@GetMapping(value = "/revista/{id}/excluir")
+	public void excluir(@PathVariable Integer id) {
+		revistaService.excluir(id);
 	}
 }
